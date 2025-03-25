@@ -1,0 +1,40 @@
+#Recursive Feature Elimination
+
+from sklearn.feature_selection import RFE
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
+import numpy as np
+
+# Assuming you have your feature matrix X and target variable y
+
+# Create a linear regression model (you can replace it with a different model if needed)
+model = LinearRegression()
+
+# Specify the number of features to select
+num_features = 5
+
+# Create an RFE object
+rfe = RFE(estimator=model, n_features_to_select=num_features)
+
+# Fit RFE to the data
+rfe.fit(X, y)
+
+# Get the ranking of each feature (1 = selected, 0 = not selected)
+feature_ranking = rfe.ranking_
+
+# Get the selected feature indices
+selected_indices = np.where(feature_ranking == 1)[0]
+
+# Get the selected feature names
+selected_features = X.columns[selected_indices]
+
+# Train a model using the selected features
+X_selected = X.iloc[:, selected_indices]
+model.fit(X_selected, y)
+
+# Make predictions using the selected features
+y_pred = model.predict(X_selected)
+
+# Evaluate the model performance
+mse = mean_squared_error(y, y_pred)
+print("Mean Squared Error:", mse)
